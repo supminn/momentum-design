@@ -83,9 +83,9 @@ class Text extends Component {
       case 'h5': return html`<h5 part=${PART_NAME}><slot></slot></h5>`;
       case 'h6': return html`<h6 part=${PART_NAME}><slot></slot></h6>`;
       case 'div': return html`<div part=${PART_NAME}><slot></slot></div>`;
-      case 'p': return html`<p part=${PART_NAME}><slot></slot></p>`;
       case 'span': return html`<span part=${PART_NAME}><slot></slot></span>`;
       case 'small': return html`<small part=${PART_NAME}><slot></slot></small>`;
+      case 'p':
       default: return html`<p part=${PART_NAME}><slot></slot></p>`;
     }
   }
