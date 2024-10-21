@@ -73,8 +73,29 @@ test.describe('mdc-text', () => {
     test(tagname, async ({ componentsPage }) => {
       const text = await setup({ componentsPage, type: DEFAULTS.TYPE, tagname, children: textContent });
 
-      await test.step('tagname should be present on component', async () => {
-        expect(await text.getAttribute('tagname')).toBe(tagname);
+      /**
+       * ACCESSIBILITY
+       */
+      await test.step('accessibility', async () => {
+        await componentsPage.accessibility.checkForA11yViolations(`text-tagname-${tagname}`);
+      });
+
+      /**
+       * VISUAL REGRESSION
+       */
+      await test.step('visual-regression', async () => {
+        await test.step('matches screenshot of element', async () => {
+          await componentsPage.visualRegression.takeScreenshot(`mdc-text-tagname-${tagname}`, { element: text });
+        });
+      });
+
+      /**
+       * ATTRIBUTES
+       */
+      await test.step('attributes', async () => {
+        await test.step('tagname should be present on component', async () => {
+          expect(await text.getAttribute('tagname')).toBe(tagname);
+        });
       });
     });
   }
