@@ -31,7 +31,7 @@ const styles = css`
     cursor: not-allowed;
   }
 
-  .button:active, .btn-active {
+  .button:active {
     background-color: #2c8500;
     border-color: #003057;
   }
