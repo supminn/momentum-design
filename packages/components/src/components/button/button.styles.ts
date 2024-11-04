@@ -2,10 +2,6 @@ import { css } from 'lit';
 
 const styles = css`
   :host {
-    display: inline-block;
-  }
-
-  .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -19,23 +15,23 @@ const styles = css`
     transition: background-color 0.3s, border-color 0.3s;
   }
 
-  .button:hover {
+  :host(:hover) {
     background-color: #0056b3;
     border-color: #004085;
   }
 
-  .button.disabled {
+  :host([disabled]), :host([softDisabled]) {
     background-color: #e0e0e0;
     border-color: #d0d0d0;
     color: #a0a0a0;
     cursor: not-allowed;
   }
 
-  .button:active, .btn-active {
+  :host(:active), :host([active]) {
     background-color: #2c8500;
     border-color: #003057;
   }
-  .button:focus {
+  :host(:focus) {
     outline: 0.125rem solid #f5fb3c;
   }
 `;

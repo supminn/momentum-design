@@ -4,8 +4,8 @@ import { html } from 'lit';
 import { classArgType, styleArgType } from '../../../config/storybook/commonArgTypes';
 
 const render = (args: Args) => html`
-  <mdc-button>${args.children}</mdc-button>
-  <mdc-button>${args.children}</mdc-button>`;
+  <mdc-button ?disabled=${args.disabled} ?softDisabled=${args.softDisabled}>${args.children}</mdc-button>
+  <mdc-button ?disabled=${args.disabled} ?softDisabled=${args.softDisabled}>${args.children}</mdc-button>`;
 
 const meta: Meta = {
   title: 'Work In Progress/button',
@@ -18,11 +18,6 @@ const meta: Meta = {
     children: {
       control: 'text',
       description: 'Children (passed into "default" slot)',
-    },
-    active: {
-      control: 'boolean',
-      description: 'Active',
-      defaultValue: false,
     },
     disabled: {
       control: 'boolean',
@@ -50,7 +45,6 @@ export const Default: StoryObj = {
     class: 'custom-classname',
     style: 'margin-top: 20px;',
     children: 'Click Me',
-    active: true,
     disabled: false,
     softDisabled: false,
     ariaLabel: 'my button text',

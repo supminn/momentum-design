@@ -4,8 +4,8 @@ import { html } from 'lit';
 import { classArgType, styleArgType } from '../../../config/storybook/commonArgTypes';
 
 const render = (args: Args) => html`
-  <mdc-button1 args.property="${args.property}">${args.children}</mdc-button1>
-  <mdc-button1 args.property="${args.property}">${args.children}</mdc-button1>`;
+  <mdc-button1 ?disabled=${args.disabled} ?softDisabled=${args.softDisabled}>${args.children}</mdc-button1>
+  <mdc-button1 ?disabled=${args.disabled} ?softDisabled=${args.softDisabled}>${args.children}</mdc-button1>`;
 
 const meta: Meta = {
   title: 'Work In Progress/button1',

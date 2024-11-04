@@ -1,6 +1,5 @@
-import { CSSResult, html } from 'lit';
+import { CSSResult, html, PropertyValueMap } from 'lit';
 import { property } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 import styles from './button.styles';
 import { Component } from '../../models';
 
@@ -25,29 +24,67 @@ class Button extends Component {
     constructor() {
       super();
       this.active = false;
+      this.initializeButtonAttributes();
+    }
+
+    private initializeButtonAttributes() {
+      this.role = 'button';
+      this.addEventListener('click', this.handleClick);
+      this.addEventListener('keydown', this.handleKeyDown);
+      this.addEventListener('keyup', this.handleKeyUp);
+      this.addEventListener('focus', this.handleFocus);
+      this.addEventListener('blur', this.handleFocus);
+    }
+
+    public override update(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+      super.update(changedProperties);
+      console.log('Turbo 🚀  ~ overrideupdate ~ changedProperties:', changedProperties);
+
+      if (changedProperties.has('disabled')) {
+        this.setDisabled(this, this.disabled);
+      }
+      if (changedProperties.has('softDisabled')) {
+        this.setSoftDisabled(this, this.softDisabled);
+      }
+      if (changedProperties.has('arialabel')) {
+        this.setAriaLabel(this, this.ariaLabel);
+      }
+    }
+
+    private setAriaLabel(element: HTMLElement, ariaLabel: string) {
+      if (ariaLabel) {
+        element.setAttribute('aria-label', ariaLabel);
+      } else {
+        element.removeAttribute('aria-label');
+      }
+    }
+
+    private setSoftDisabled(element: HTMLElement, disabled: boolean) {
+      if (disabled) {
+        element.setAttribute('aria-disabled', 'true');
+      } else {
+        element.removeAttribute('aria-disabled');
+      }
+    }
+
+    private setDisabled(element: HTMLElement, disabled: boolean) {
+      if (disabled) {
+        element.setAttribute('aria-disabled', 'true');
+        element.setAttribute('tabindex', '-1');
+      } else {
+        element.removeAttribute('aria-disabled');
+        element.setAttribute('tabindex', '0');
+      }
     }
 
     public override render() {
       return html`
-            <div
-                role="button"
-                tabindex="${this.disabled ? '-1' : '0'}"
-                aria-label="${this.ariaLabel}"
-                aria-disabled="${this.disabled}"
-                @click="${this.handleClick}"
-                @keydown="${this.handleKeyDown}"
-                @keyup="${this.handleKeyUp}"
-                @focus="${this.handleFocus}"
-                @blur="${this.handleFocus}"
-                class="${classMap({ button: true, disabled: this.disabled, 'btn-active': this.active })}"
-            >
                 <slot></slot>
-            </div>
         `;
     }
 
     private handleClick(event: MouseEvent) {
-      if (!this.disabled) {
+      if (!this.disabled && !this.softDisabled) {
         console.log('Button clicked', event.target);
       }
     }
@@ -60,14 +97,13 @@ class Button extends Component {
 
     private handleKeyDown(event: KeyboardEvent) {
       if (!this.disabled && (event.key === 'Enter' || event.key === ' ')) {
-        event.preventDefault(); // Prevent scrolling when space is pressed
+        event.preventDefault();
         this.active = true;
       }
     }
 
     private handleKeyUp(event: KeyboardEvent) {
       if (!this.disabled && (event.key === 'Enter' || event.key === ' ')) {
-        this.active = false; // Reset active state
         this.handleClick(event as unknown as MouseEvent);
         this.active = false;
       }
