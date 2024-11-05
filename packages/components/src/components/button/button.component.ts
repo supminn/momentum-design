@@ -33,12 +33,11 @@ class Button extends Component {
       this.addEventListener('keydown', this.handleKeyDown);
       this.addEventListener('keyup', this.handleKeyUp);
       this.addEventListener('focus', this.handleFocus);
-      this.addEventListener('blur', this.handleFocus);
+      this.addEventListener('blur', this.handleBlur);
     }
 
     public override update(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
       super.update(changedProperties);
-      console.log('Turbo 🚀  ~ overrideupdate ~ changedProperties:', changedProperties);
 
       if (changedProperties.has('disabled')) {
         this.setDisabled(this, this.disabled);
@@ -95,17 +94,24 @@ class Button extends Component {
       }
     }
 
+    private handleBlur(event: FocusEvent) {
+      if (this.softDisabled) {
+        event.preventDefault();
+      }
+      this.classList.remove('active');
+    }
+
     private handleKeyDown(event: KeyboardEvent) {
       if (!this.disabled && (event.key === 'Enter' || event.key === ' ')) {
         event.preventDefault();
-        this.active = true;
+        this.classList.add('active');
       }
     }
 
     private handleKeyUp(event: KeyboardEvent) {
       if (!this.disabled && (event.key === 'Enter' || event.key === ' ')) {
         this.handleClick(event as unknown as MouseEvent);
-        this.active = false;
+        this.classList.remove('active');
       }
     }
 

@@ -19,6 +19,11 @@ const meta: Meta = {
       control: 'text',
       description: 'Children (passed into "default" slot)',
     },
+    active: {
+      control: 'boolean',
+      description: 'Active',
+      defaultValue: false,
+    },
     disabled: {
       control: 'boolean',
       description: 'Disabled',
@@ -45,6 +50,7 @@ export const Default: StoryObj = {
     class: 'custom-classname',
     style: 'margin-top: 20px;',
     children: 'Click Me',
+    active: true,
     disabled: false,
     softDisabled: false,
     ariaLabel: 'my button text',

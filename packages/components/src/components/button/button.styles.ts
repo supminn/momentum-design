@@ -27,7 +27,7 @@ const styles = css`
     cursor: not-allowed;
   }
 
-  :host(:active), :host([active]) {
+  :host(:active), :host(.active) {
     background-color: #2c8500;
     border-color: #003057;
   }
