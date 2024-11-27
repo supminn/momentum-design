@@ -3,6 +3,7 @@ import '.';
 import { html } from 'lit';
 import { BUTTON_COLORS, PILL_BUTTON_SIZES, BUTTON_VARIANTS, ICON_BUTTON_SIZES } from './button.constants';
 import { classArgType, styleArgType } from '../../../config/storybook/commonArgTypes';
+import { hideControls } from '../../../config/storybook/utils';
 
 const render = (args: Args) => html`
   <mdc-button 
@@ -56,6 +57,13 @@ const meta: Meta = {
       control: 'select',
       options: Object.values(BUTTON_COLORS),
     },
+    ...hideControls([
+      'iconSize',
+      'buttonType',
+      'form',
+      'internals',
+      'default',
+    ]),
     ...classArgType,
     ...styleArgType,
   },
