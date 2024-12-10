@@ -70,7 +70,6 @@ export const Image: StoryObj = {
     size: PRESENCE_SIZE.X_LARGE,
     src: 'https://picsum.photos/id/63/256',
     initials: 'AK',
-    'icon-name': 'placeholder-bold',
   },
 };
 
@@ -106,6 +105,7 @@ export const Size: StoryObj = {
       'presence',
       'size',
       'src',
+      'is-typing',
     ]),
   },
 };
@@ -123,6 +123,17 @@ export const SizeWithPresence: StoryObj = {
       `)}
     </div>
   `,
+  argTypes: {
+    ...disableControls([
+      'counter',
+      'icon-name',
+      'initials',
+      'presence',
+      'size',
+      'src',
+      'is-typing',
+    ]),
+  },
   args: {
     src: 'https://picsum.photos/id/63/256',
     presence: 'active',

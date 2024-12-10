@@ -96,15 +96,15 @@ class Avatar extends Component {
   iconName?: IconNames;
 
   /**
-   * The counter is the number which can be displayed for the avatar.
-   * The maximum number is 99 and if the give number is greater than 99,
-   * then the avatar will be displayed as `99+`.
+   * The counter represents the value displayed for the avatar.
+   * The maximum allowable value is 99. If the provided number exceeds 99,
+   * the avatar will be displayed as '99+'.
    */
   @property({ type: Number })
   counter?: number;
 
   /**
-   * Determines whether the user is typing.
+   * Represents the typing indicator when the user is typing.
    * @default false
    */
   @property({ type: Boolean, attribute: 'is-typing' })
@@ -116,6 +116,7 @@ class Avatar extends Component {
   @state() private isPhotoLoaded = false;
 
   /**
+   * @internal
    * The avatar presence will be hidden if the avatar type is COUNTER.
    * If the presence is set, it will be rendered as a child of the avatar.
    *
@@ -161,10 +162,9 @@ class Avatar extends Component {
    * @internal
    * Generates the photo template for the avatar component.
    * Utilizes the `src` attribute to display an image.
-   * The photo is hidden until it is fully loaded, at which point
-   * `isPhotoLoaded` is set to `true` by the `handleOnLoad` method.
-   * If an error occurs during loading, `handleOnError` sets `isPhotoLoaded`
-   * to `false` and throws an error.
+   * The photo remains hidden until it is fully loaded;
+   * upon successful loading, the `handleOnLoad` method sets `isPhotoLoaded` to true.
+   * In the event of a loading error, the `handleOnError` method sets `isPhotoLoaded` to false and raises an error.
    *
    * @returns The template result containing the avatar photo.
    */
@@ -183,7 +183,7 @@ class Avatar extends Component {
 
   /**
    * @internal
-   * Generates the icon template for the avatar component.
+   * Generates the icon template for the photo avatar component.
    * Utilizes the `mdc-icon` component to display an icon.
    * If the `iconName` property is not provided, it defaults to the `DEFAULTS.ICON_NAME`.
    *
@@ -202,7 +202,7 @@ class Avatar extends Component {
 
   /**
    * @internal
-   * Generates the text template for the avatar component.
+   * Generates the text template for the initials/counter avatar component.
    * Utilizes the `mdc-text` component to display text.
    *
    * @param content - the text content to be displayed
@@ -221,7 +221,7 @@ class Avatar extends Component {
 
   /**
    * @internal
-   * Generates the counter text by converting the given number to a string.
+   * Generates the text content for counter avatar by converting the given number to a string.
    * If the counter exceeds the maximum limit of 99, it will return the maximum limit as a string
    * followed by a '+' character.
    *
@@ -230,7 +230,7 @@ class Avatar extends Component {
    */
   private generateCounterText(counter: number): string {
     if (counter > MAX_COUNTER) {
-      return `${MAX_COUNTER}'+'`;
+      return `${MAX_COUNTER}+`;
     }
     return counter.toString();
   }
@@ -238,7 +238,7 @@ class Avatar extends Component {
   /**
    * @internal
    * Converts the given initials to uppercase and takes the first two characters.
-   * This is used to generate the text content for the text avatar type.
+   * This is used to generate the text content for the initials avatar.
    *
    * @param initials - the string containing the initials
    * @returns the first two uppercase characters of the given initials
@@ -251,8 +251,9 @@ class Avatar extends Component {
    * @internal
    * Generates the text content based on the given type.
    * If the type is TEXT, it will use the initials property and generate the first two uppercase characters.
-   * If the type is COUNTER, it will use the counter property and generate the string representation of the counter.
-   * The generated content is then passed to the textTemplate method to generate the final template.
+   * If the type is COUNTER, it uses the value of counter property and
+   * generate the string representation of the counter.
+   * The generated content is then passed to the `textTemplate` method to generate the final template.
    *
    * @param type - the type of the avatar
    * @returns the template result containing the avatar text
@@ -293,8 +294,8 @@ class Avatar extends Component {
   /**
    * @internal
    * Returns the template result based on the type of the avatar component.
-   * The type is determined by the user-provided inputs and the method will delegate to the
-   * corresponding template method to generate the template result.
+   * The type is determined by `getTypeBasedOnInputs` based on user's input.
+   * Based on the generated type, template result is generated.
    *
    * @param type - the type of the avatar component
    * @returns the template result containing the avatar content
@@ -314,7 +315,7 @@ class Avatar extends Component {
 
   /**
    * @internal
-   * Generates the loading indicator content for the avatar when typing.
+   * Represents the loading indicator for the avatar when typing.
    * If the avatar is in typing state, this method returns a loading indicator
    * comprising three small filled dots, scaled based on the avatar size.
    *
