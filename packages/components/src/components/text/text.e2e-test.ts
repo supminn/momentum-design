@@ -1,14 +1,16 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import { expect } from '@playwright/test';
 import { ComponentsPage, test } from '../../../config/playwright/setup';
-import { DEFAULTS, VALUES } from './text.constants';
-import type { FontType, ValidTextTags } from './text.types';
+import StickerSheet from '../../../config/playwright/setup/utils/Stickersheet';
+import { DEFAULTS, TYPE, VALID_TEXT_TAGS } from './text.constants';
+import type { TextType, TagName } from './text.types';
 
 type SetupOptions = {
   componentsPage: ComponentsPage;
-  type: FontType;
+  type?: TextType;
   children: any;
-  tagname?: ValidTextTags;
+  tagname?: TagName;
 };
 
 const setup = async (args: SetupOptions) => {
@@ -27,80 +29,77 @@ const setup = async (args: SetupOptions) => {
   return text;
 };
 
-const typesToTest: Array<FontType> = VALUES.TYPE;
-const tagnameToTest: Array<ValidTextTags> = VALUES.TAGNAME;
 const textContent = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
 test.describe('mdc-text', () => {
   test.use({
     viewport: {
-      width: 3000,
-      height: 500,
+      width: 1200,
+      height: 3200,
     },
   });
-  for (const textType of typesToTest) {
-    test(textType, async ({ componentsPage }) => {
-      const text = await setup({ componentsPage, type: textType, children: textContent });
 
-      /**
-       * ACCESSIBILITY
-       */
-      await test.step('accessibility', async () => {
-        await componentsPage.accessibility.checkForA11yViolations(`text-default-${textType}`);
-      });
+  /**
+   * VISUAL REGRESSION
+   */
+  test('visual-regression & accessibility', async ({ componentsPage }) => {
+    const textStickerSheet = new StickerSheet(componentsPage, 'mdc-text');
+    await test.step('add text component with different types to sheet', async () => {
+      textStickerSheet.setChildren(textContent);
+      await textStickerSheet.createMarkupWithCombination({ type: TYPE }, true);
+    });
 
-      /**
-       * VISUAL REGRESSION
-       */
-      await test.step('visual-regression', async () => {
-        await test.step('matches screenshot of element', async () => {
-          await componentsPage.visualRegression.takeScreenshot(`mdc-text-${textType}`, { element: text });
-        });
-      });
+    await test.step('add text component with different tagnames to sheet', async () => {
+      textStickerSheet.setAttributes({ type: DEFAULTS.TYPE });
+      await textStickerSheet.createMarkupWithCombination({ tagname: VALID_TEXT_TAGS }, true);
+    });
 
-      /**
-       * ATTRIBUTES
-       */
-      await test.step('attributes', async () => {
-        await test.step('attribute type should be present on component', async () => {
+    await textStickerSheet.mountStickerSheet();
+    /**
+     * VISUAL REGRESSION
+     */
+    await test.step('matches screenshot of element tagnames', async () => {
+      await componentsPage.visualRegression.takeScreenshot('mdc-text');
+    });
+
+    /**
+     * ACCESSIBILITY
+     */
+    await test.step('accessibility', async () => {
+      await componentsPage.accessibility.checkForA11yViolations('text');
+    });
+  });
+
+  test('attributes', async ({ componentsPage }) => {
+    const text = await setup({
+      componentsPage,
+      children: textContent,
+    });
+
+    /**
+     * ATTRIBUTE TYPE CHECK
+     */
+    for (const textType of Object.values(TYPE)) {
+      await test.step(textType, async () => {
+        await componentsPage.setAttributes(text, { type: textType });
+
+        await test.step('type should be present on component', async () => {
           expect(await text.getAttribute('type')).toBe(textType);
         });
       });
-    });
-  }
+    }
 
-  for (const tagname of tagnameToTest) {
-    test(tagname, async ({ componentsPage }) => {
-      const text = await setup({
-        componentsPage,
-        type: DEFAULTS.TYPE,
-        tagname,
-        children: textContent,
-      });
+    /**
+     * ATTRIBUTE TAGNAME CHECK
+     */
+    for (const tagname of Object.values(VALID_TEXT_TAGS)) {
+      await test.step(tagname, async () => {
+        await componentsPage.setAttributes(text, { tagname });
 
-      /**
-       * ACCESSIBILITY
-       */
-      await test.step('accessibility', async () => {
-        await componentsPage.accessibility.checkForA11yViolations(`text-with-${tagname}-tag`);
-      });
-
-      /**
-       * VISUAL REGRESSION
-       */
-      // skipping visual regression for firefox and webkit due to flakiness
-      await test.step('visual-regression', async () => {
-        await test.step('matches screenshot of element', async () => {
-          await componentsPage.visualRegression.takeScreenshot(`mdc-text-tag-${tagname}`, { element: text });
+        await test.step('tagname should be present on component', async () => {
+          expect(await text.getAttribute('tagname')).toBe(tagname);
         });
       });
-
-      /**
-       * ATTRIBUTES
-       */
-      await test.step('tagname should be present on component', async () => {
-        expect(await text.getAttribute('tagname')).toBe(tagname);
-      });
-    });
-  }
+    }
+  });
 });
