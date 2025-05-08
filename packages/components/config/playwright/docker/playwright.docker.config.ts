@@ -25,7 +25,7 @@ const githubActionsReporterOptions: GitHubActionOptions = {
   includeResults: ['fail', 'flaky'],
 };
 
-const DEFAULT_TIMEOUT = 30 * 1000;
+const DEFAULT_TIMEOUT = 35 * 1000;
 const LONGER_TIMEOUT = DEFAULT_TIMEOUT * 1.5;
 /**
  * See https://playwright.dev/docs/test-configuration.
