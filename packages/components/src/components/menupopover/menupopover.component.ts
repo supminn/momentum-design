@@ -7,7 +7,7 @@ import Popover from '../popover/popover.component';
 import { POPOVER_PLACEMENT } from '../popover/popover.constants';
 import { TAG_NAME as MENU_POPOVER } from './menupopover.constants';
 import styles from './menupopover.styles';
-import { isValidMenuItem, isValidPopover } from './menupopover.utils';
+import { isActiveMenuItem, isValidMenuItem, isValidPopover } from './menupopover.utils';
 import { popoverStack } from '../popover/popover.stack';
 
 /**
@@ -52,8 +52,7 @@ class MenuPopover extends Popover {
       },
     )
       .flat()
-      .filter((node) => !!node)
-      .filter((node) => !node.hasAttribute('disabled'));
+      .filter((node) => !!node && !node.hasAttribute('disabled'));
   }
 
   override connectedCallback() {
@@ -74,8 +73,10 @@ class MenuPopover extends Popover {
     await super.firstUpdated(changedProperties);
 
     // Reset all tabindex to -1 and set the tabindex of the first menu item to 0
-    this.menuItems.forEach((menuitem) => menuitem.setAttribute('tabindex', '-1'));
-    this.menuItems[0].setAttribute('tabindex', '0');
+    if (this.menuItems.length > 0) {
+      this.menuItems.forEach((menuitem) => menuitem.setAttribute('tabindex', '-1'));
+      this.menuItems[0].setAttribute('tabindex', '0');
+    }
 
     this.triggerElement?.setAttribute('aria-haspopup', ROLE.MENU);
     if (this.parentElement?.tagName?.toLowerCase() === MENU_POPOVER) {
@@ -109,32 +110,55 @@ class MenuPopover extends Popover {
     }
   }
 
+  override onOutsidePopoverClick = (event: MouseEvent) => {
+    if (popoverStack.peek() !== this) return;
+    let insidePopoverClick = false;
+    const path = event.composedPath();
+    insidePopoverClick = this.contains(event.target as Node) || path.includes(this.triggerElement!);
+    const clickedOnBackdrop = this.backdropElement ? path.includes(this.backdropElement) : false;
+
+    if (!insidePopoverClick || clickedOnBackdrop) {
+      this.closeAllMenuPopovers();
+    }
+  };
+
+  private hasSubmenuWithTriggerId(id: string | null): boolean {
+    return this.parentElement?.querySelector(`${MENU_POPOVER}[triggerid="${id}"]`) !== null;
+  }
+
   private handleMouseClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const role = target.getAttribute('role');
+    const triggerId = target.getAttribute('id');
+
     if (
-      isValidMenuItem(target)
-      && !isValidPopover(target.nextElementSibling)
-      && role === ROLE.MENUITEM
+      isActiveMenuItem(target) // menuitemcheckbox and menuitemradio are not supposed to close the popover
+      && !this.hasSubmenuWithTriggerId(triggerId)
     ) {
       this.closeAllMenuPopovers();
+    }
+  }
+
+  private resolveDirectionKey(key: string, isRtl: boolean) {
+    if (!isRtl) return key;
+
+    switch (key) {
+      case KEYS.ARROW_LEFT:
+        return KEYS.ARROW_RIGHT;
+      case KEYS.ARROW_RIGHT:
+        return KEYS.ARROW_LEFT;
+      default:
+        return key;
     }
   }
 
   private handleKeyDown(event: KeyboardEvent) {
     const currentIndex = this.getCurrentIndex(event.target);
     if (currentIndex === -1) return;
-    const isRtl = document.querySelector('html')?.getAttribute('dir') === 'rtl'
-     || window.getComputedStyle(this).direction === 'rtl';
-    let targetKey = event.key;
-    if (isRtl) {
-      // Swap left and right keys for RTL languages
-      if (event.key === KEYS.ARROW_LEFT) {
-        targetKey = KEYS.ARROW_RIGHT;
-      } else if (event.key === KEYS.ARROW_RIGHT) {
-        targetKey = KEYS.ARROW_LEFT;
-      }
-    }
+
+    const isRtl = window.getComputedStyle(this).direction === 'rtl';
+
+    const targetKey = this.resolveDirectionKey(event.key, isRtl);
+
     switch (targetKey) {
       case KEYS.HOME: {
         // Move focus to the first menu item
@@ -142,7 +166,7 @@ class MenuPopover extends Popover {
         break;
       }
       case KEYS.END: {
-        // Move focus to the first menu item
+        // Move focus to the last menu item
         this.resetTabIndexAndSetFocus(this.menuItems.length - 1, currentIndex);
         break;
       }
@@ -160,8 +184,12 @@ class MenuPopover extends Popover {
       }
       case KEYS.ARROW_RIGHT: {
         // If there is a submenu, open it.
-        if (isValidPopover(this.menuItems[currentIndex]?.nextElementSibling)) {
-          (this.menuItems[currentIndex]?.nextElementSibling as Popover).showPopover();
+        const triggerId = this.menuItems[currentIndex]?.getAttribute('id');
+        if (this.hasSubmenuWithTriggerId(triggerId)) {
+          const submenu = this.parentElement?.querySelector(`${MENU_POPOVER}[triggerid="${triggerId}"]`) as MenuPopover;
+          if (submenu) {
+            submenu.showPopover();
+          }
         }
         break;
       }
