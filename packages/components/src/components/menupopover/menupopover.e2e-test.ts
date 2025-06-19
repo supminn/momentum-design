@@ -104,6 +104,7 @@ const openSubmenuWithKeyboard = async (
   await expect(firstSubItem).toBeFocused();
 };
 
+test.use({ viewport: { width: 400, height: 400 } });
 test('mdc-menupopover', async ({ componentsPage }) => {
   /**
    * ATTRIBUTES
