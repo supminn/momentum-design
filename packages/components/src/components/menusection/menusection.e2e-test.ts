@@ -63,7 +63,7 @@ test('mdc-menusection', async ({ componentsPage }) => {
    * VISUAL REGRESSION
    */
   await test.step('visual-regression', async () => {
-    await componentsPage.page.setViewportSize({ width: 600, height: 800 });
+    await componentsPage.page.setViewportSize({ width: 600, height: 1300 });
     const menusectionSheet = new StickerSheet(componentsPage, 'mdc-menusection', 'margin: 0.25rem 0;');
     const options = { createNewRow: true };
 

@@ -197,7 +197,7 @@ test('mdc-menuitemradio', async ({ componentsPage }) => {
    * VISUAL REGRESSION
    */
   await test.step('visual regression', async () => {
-    await componentsPage.page.setViewportSize({ width: 600, height: 800 });
+    await componentsPage.page.setViewportSize({ width: 600, height: 1000 });
     const radioMenuItemSheet = new StickerSheet(componentsPage, 'mdc-menuitemradio', 'margin: 0.25rem 0;');
     const options = { createNewRow: true };
     const label = 'Menu Item Radio';
