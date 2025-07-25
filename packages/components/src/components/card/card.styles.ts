@@ -5,7 +5,6 @@ import { hostFitContentStyles } from '../../utils/styles';
 const styles = css`
   :host {
     --mdc-card-width: 20rem;
-    --mdc-card-height: 10rem;
     align-items: flex-start;
     border-radius: 0.5rem;
     border: 1px solid var(--mds-color-theme-outline-primary-normal);
@@ -21,7 +20,6 @@ const styles = css`
   :host([orientation='horizontal']) {
     min-width: 40rem;
     --mdc-card-width: 40rem;
-    height: var(--mdc-card-height);
   }
 
   :host([orientation='vertical']) {
@@ -29,18 +27,25 @@ const styles = css`
     flex-direction: column;
   }
 
+  :host::part(image) {
+    background-image: var(--mdc-card-image-url);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   :host([orientation='vertical'])::part(image) {
-    object-fit: cover;
-    height: 12.5rem;
     width: 100%;
+    height: 12.5rem;
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
   }
 
   :host([orientation='horizontal'])::part(image) {
-    object-fit: cover;
     width: 10rem;
     height: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
   }

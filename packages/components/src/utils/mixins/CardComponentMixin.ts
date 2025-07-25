@@ -6,6 +6,7 @@ import { DEFAULTS } from '../../components/card/card.constants';
 import type { CardOrientation, CardVariant } from '../../components/card/card.types';
 import type { TagName as TagNameType } from '../../components/text/text.types';
 import type { IconNames } from '../../components/icon/icon.types';
+import { ROLE } from '../roles';
 
 import type { Constructor } from './index.types';
 
@@ -109,7 +110,12 @@ export const CardComponentMixin = <T extends Constructor<LitElement>>(superClass
       if (!this.imageSrc) {
         return nothing;
       }
-      return html`<img part="image" src="${this.imageSrc}" alt="${this.imageAlt}" />`;
+      return html`<div
+        part="image"
+        role="${ROLE.IMG}"
+        aria-label="${this.imageAlt}"
+        style="--mdc-card-image-url: url('${this.imageSrc}');"
+      ></div>`;
     }
 
     /**
